@@ -1,4 +1,5 @@
 import glob
+from collections import Callable
 from pathlib import Path
 from attr import attrs
 
@@ -10,7 +11,7 @@ from tkinter.ttk import Progressbar
 from tkinter import Tk, Label
 
 
-@attrs(auto_attribs=True, frozen=True, slots=True)
+@attrs(auto_attribs=True, slots=True)
 class SimpleEastBackend(Backend):
 
     net: Model
@@ -18,6 +19,7 @@ class SimpleEastBackend(Backend):
     height: int = 320
     width: int = 320
     modifier: ModFunc = blackfill
+    stop_flag: bool = False
 
     def process_image(self, img: Path, tgt_folder: Path, confidence: float):
         r_img = process_image(
@@ -26,11 +28,16 @@ class SimpleEastBackend(Backend):
             modify_func=self.modifier)
         save_image_to_folder(r_img, img, tgt_folder)
 
-    def process_images(self, src_folder: Path, tgt_folder: Path, confidence: float, pb: Progressbar, value_label: Label, window: Tk):
+    def process_images(self, src_folder: Path, tgt_folder: Path,
+                       confidence: float, pb: Progressbar, value_label: Label,
+                       labelupdater: Callable, window: Tk):
         files = [i for i in src_folder.rglob("*") if i.is_file()]
         for i, file in enumerate(files):
-            pb['value'] = round(self.progressbar['value'] + 0.1, 2)
-            value_label['text'] = self.labelupdater()
+            if self.stop_flag:
+                break
+            percentage = (i+1) / len(files)
+            pb['value'] = min(round(percentage*100, 2), 100)
+            value_label['text'] = labelupdater()
             window.update_idletasks()
             self.process_image(file, tgt_folder, confidence)
         return

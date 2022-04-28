@@ -56,7 +56,7 @@ if __name__ == '__main__':
     from imagetexteraser.modification import bbox
     src_path: Path = Path("../test_images/im1.png")
     tgt_path: Path = Path("result")
-    net, inference = east_model("../frozen_east_text_detection.pb")
+    net, inference = east_model("weights/frozen_east_text_detection.pb")
     img = process_image(conduct_inference=inference, net=net, src_path=src_path, modify_func=bbox)
     # show the output image
     save_image_to_folder(img, src_path=src_path, tgt_folder=tgt_path)

@@ -5,12 +5,12 @@ from imagetexteraser.modification import bbox
 from model_factories import east_model
 
 
-def standard_east_backend(model_state: Path = "../frozen_east_text_detection.pb"):
+def standard_east_backend(model_state: Path = "frozen_east_text_detection.pb"):
     net, inf = east_model(model_state)
     return SimpleEastBackend(net=net, inference=inf)
 
 
-def debug_east_backend(model_state: Path = "../frozen_east_text_detection.pb"):
+def debug_east_backend(model_state: Path = "weights/frozen_east_text_detection.pb"):
     net, inf = east_model(model_state)
     return SimpleEastBackend(net=net, inference=inf, modifier=bbox)
 

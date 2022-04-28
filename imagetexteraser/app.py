@@ -1,8 +1,11 @@
+import os
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog as fd
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 from tkinter import *
+from backend_registry import east_model, standard_east_backend
 
 from imagetexteraser.frontend.browser import FilepathFiller, StartProcess, ProgessBarLabelUpdate
 
@@ -45,8 +48,11 @@ def main():
     update_progress_label = ProgessBarLabelUpdate(pb)
     value_label = ttk.Label(window, text=update_progress_label())
     value_label.grid(columnspan=2, row=3)
-
-    progress = StartProcess(window=window, progressbar=pb, labelupdater=update_progress_label, value_label=value_label)
+    backend = standard_east_backend("weights/frozen_east_text_detection.pb")
+    progress = StartProcess(window=window, progressbar=pb,
+                            labelupdater=update_progress_label,
+                            value_label=value_label, backend=backend,
+                            src_entry=ent1, tgt_entry=ent2)
 
     # start button
     start_button = ttk.Button(

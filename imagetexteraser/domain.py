@@ -7,10 +7,14 @@ import numpy as np
 
 class Backend(Protocol):
 
+        stop_flag: bool
+
         def process_image(self, img: Path, tgt_folder: Path, confidence: float):
                 ...
 
-        def process_images(self, src_folder: Path, tgt_folder: Path, confidence: float, pb: Progressbar, value_label: Label, window: Tk):
+        def process_images(self, src_folder: Path, tgt_folder: Path,
+                           confidence: float, pb: Progressbar, value_label: Label,
+                           labelupdater: Callable, window: Tk):
                 ...
 
 
