@@ -10,6 +10,9 @@ from backend_registry import east_model, standard_east_backend
 from imagetexteraser.frontend.browser import FilepathFiller, StartProcess, ProgessBarLabelUpdate
 
 
+# pyinstaller .\imagetexteraser\app.py -p imagetexteraser --add-data "imagetexteraser\\weights\\frozen_east_text_detection.pb;weights" -w --name Textterminator
+
+
 def main():
     window = tk.Tk()
     window.title("Dr. Richter's Texterminator")
