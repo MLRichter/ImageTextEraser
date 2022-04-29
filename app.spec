@@ -8,7 +8,11 @@ a = Analysis(
     ['imagetexteraser\\app.py'],
     pathex=['imagetexteraser'],
     binaries=[],
-    datas=[('imagetexteraser\\\\weights\\\\frozen_east_text_detection.pb', 'weights')],
+    datas=[('imagetexteraser\\\\weights\\\\frozen_east_text_detection.pb', 'weights'),
+           ('imagetexteraser\\\\weights\\\\onet.onnx', 'weights'),
+           ('imagetexteraser\\\\weights\\\\pnet.onnx', 'weights')
+           ('imagetexteraser\\\\weights\\\\rnet.onnx', 'weights')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

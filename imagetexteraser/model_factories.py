@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import cv2
-from mtcnn_cv2 import MTCNN
+from MTCNN import MTCNN
 import numpy as np
 
 from imagetexteraser.domain import Model, InferenceFunction, Confidence, BoundingBox
