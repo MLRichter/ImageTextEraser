@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import cv2
+from mtcnn_cv2 import MTCNN
 import numpy as np
 
 from imagetexteraser.domain import Model, InferenceFunction, Confidence, BoundingBox
@@ -72,3 +73,53 @@ def _east_inference(net: Model, image: np.ndarray, height: int, width: int, min_
 def east_model(model_path: Path) -> Tuple[Model, InferenceFunction]:
     net = cv2.dnn.readNet(str(model_path))
     return net, _east_inference
+
+
+def _mtcnn_inference(net: Model, image: np.ndarray, height: int, width: int, min_confidence: float,
+                      layer_names: List[str] = ("feature_fusion/Conv_7/Sigmoid", "feature_fusion/concat_3")
+                      ) -> Tuple[List[BoundingBox], List[Confidence]]:
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    result = net.detect_faces(image)
+
+    bounding_boxes = []
+    confidences = []
+    for prediction in result:
+        bounding_box = result[0]["box"]
+        processed_box = (bounding_box[0],
+                         bounding_box[1],
+                         bounding_box[0] + bounding_box[2],
+                         bounding_box[1] + bounding_box[3])
+        bounding_boxes.append(processed_box)
+        confidences.append(prediction["confidence"])
+    return bounding_boxes, confidences
+
+
+def mtcnn_model(*args, **kwargs) -> Tuple[Model, InferenceFunction]:
+    net = MTCNN()
+    return net, _mtcnn_inference
+
+
+def _mtcnn_composite_inference(net: Model, image: np.ndarray,
+                               height: int, width: int, min_confidence: float,
+                               layer_names: List[str] = ("feature_fusion/Conv_7/Sigmoid", "feature_fusion/concat_3"),
+                               face_recognition: bool = True, text_recognition: bool = True
+                      ) -> Tuple[List[BoundingBox], List[Confidence]]:
+    use_mtcnn = face_recognition
+    use_east = text_recognition
+    if use_mtcnn:
+        faces, face_confs = _mtcnn_inference(net=net[1], image=image, height=height, width=width,
+                                             min_confidence=min_confidence, layer_names=layer_names)
+    else:
+        faces, face_confs = [], []
+    if use_east:
+        text, text_confs = _east_inference(net=net[0], image=image, height=height, width=width,
+                                           min_confidence=min_confidence, layer_names=layer_names)
+    else:
+        text, text_confs = [], []
+    return faces + text, face_confs + text_confs
+
+
+def composit_model(*args, **kwargs) -> Tuple[Model, InferenceFunction]:
+    mtcnn, mtcnn_inf = mtcnn_model(*args, **kwargs)
+    east, east_inf = east_model(*args, **kwargs)
+    return (east, mtcnn), _mtcnn_composite_inference

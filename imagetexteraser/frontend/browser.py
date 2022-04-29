@@ -41,9 +41,19 @@ class StartProcess:
     backend: Backend
     src_entry: tk.Entry
     tgt_entry: tk.Entry
+    erase_face: tk.BooleanVar
+    erase_text: tk.BooleanVar
+    confidence: float = 0.5
     _thread: Optional[Thread] = None
 
     def __call__(self):
+
+        print(self.confidence)
+
+        if hasattr(self.backend, "face_recognition"):
+            self.backend.face_recognition = self.erase_face.get()
+        if hasattr(self.backend, "text_recognition"):
+            self.backend.text_recognition = self.erase_text.get()
 
         if Path(self.src_entry.get()) == Path(self.tgt_entry.get()):
             showinfo(message="Source and target folder may not be the same")
@@ -64,7 +74,7 @@ class StartProcess:
             self.backend.process_images(
                 src_folder=Path(self.src_entry.get()),
                 tgt_folder=Path(self.tgt_entry.get()),
-                confidence=0.5,
+                confidence=self.confidence,
                 pb=self.progressbar,
                 value_label=self.value_label,
                 labelupdater=self.labelupdater,

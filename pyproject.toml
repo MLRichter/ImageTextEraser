@@ -11,6 +11,7 @@ scikit-image = "^0.19.2"
 imutils = "^0.5.4"
 attrs = "^21.4.0"
 pyinstaller = "^5.0.1"
+mtcnn-opencv = "^1.0.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
